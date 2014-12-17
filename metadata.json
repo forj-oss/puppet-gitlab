@@ -1,0 +1,23 @@
+{
+  "name": "forj-gitlab",
+  "version": "1.0.0",
+  "author": "forj",
+  "summary": "Gitlab puppet module",
+  "license": "Apache License, Version 2.0",
+  "source": "https://github.com/forj-oss/puppet-gitlab",
+  "project_page": "https://github.com/forj-oss/puppet-gitlab",
+  "issues_url": "https://github.com/forj-oss/puppet-gitlab/issues",
+  "description": "Module to install Gitlab server using puppet",
+  "tags": ["gitlab","git","ubuntu"],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": ["12.04", "14.04"]
+    }
+  ],
+  "dependencies": [
+    {"name":"puppetlabs-vcsrepo","version_requirement":">= 1.2.0"},
+    {"name":"puppetlabs-postgresql","version_requirement":">= 4.1.0"},
+    {"name":"alup-rbenv","version_requirement":">= 1.2.0"}
+  ]
+}
