@@ -153,4 +153,18 @@ class gitlab::packages
     require => Exec['apt-get update cache'],
     }
   }
+
+  if (!defined(Package['libmysqlclient-dev'])) {
+    package { 'libmysqlclient-dev' :
+    ensure  => present,
+    require => Exec['apt-get update cache'],
+    }
+  }
+
+  if (!defined(Package['libxslt1-dev'])) {
+    package { 'libxslt1-dev' :
+    ensure  => present,
+    require => Exec['apt-get update cache'],
+    }
+  }
 }

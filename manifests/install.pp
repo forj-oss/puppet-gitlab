@@ -38,23 +38,9 @@ inherits gitlab::params
     require => User[$::gitlab::gitlab_user],
   }
 
-  # TODO: Implement different sql database options
-  class { 'postgresql::server': }
-  postgresql::server::role { 'git':
-    password_hash => postgresql_password('git', 'changeme'),
-    createdb      => true,
-    require       => User[$::gitlab::gitlab_user],
-  }
-  postgresql::server::db { 'gitlabhq_production':
-    user     => 'git',
-    password => postgresql_password('git', 'changeme'),
-    owner    => 'git',
-    require  => Postgresql::Server::Role['git'],
-  }
-  exec { 'testing sql connection':
-    command => 'psql -d gitlabhq_production',
-    user    => $::gitlab::gitlab_user,
-    require => Postgresql::Server::Db['gitlabhq_production'],
+  # Configure GitLab Database
+  class { 'gitlab::db_config':
+    require => File[$::gitlab::gitlab_home],
   }
 
   # Download GitLab Repository/Branch
@@ -64,10 +50,8 @@ inherits gitlab::params
     source   => $::gitlab::gitlab_repo,
     revision => $::gitlab::gitlab_branch,
     user     => $::gitlab::gitlab_user,
-    require  => [
-                  File[$::gitlab::gitlab_home],
-                  Exec['testing sql connection'],
-                ],
+    require  => [File[$::gitlab::gitlab_home],
+                Class['gitlab::db_config']],
   }
 
   # Copy Configuration Files
@@ -107,7 +91,7 @@ inherits gitlab::params
     owner   => $::gitlab::gitlab_user,
     group   => $::gitlab::gitlab_group,
     mode    => '0644',
-    content => template('gitlab/config/database-postgresql.yml.erb'),
+    content => template("gitlab/config/database-${::gitlab::gitlab_db_type}.yml.erb"),
     require => Vcsrepo["${::gitlab::gitlab_home}/gitlab"],
   }
   file { '/etc/init.d/gitlab':
@@ -156,8 +140,14 @@ inherits gitlab::params
 
   # GitLab Installation
   #TODO: Add parameter for mysql usage instead of postgresql
+  if $::gitlab::gitlab_db_type == 'postgresql' {
+    $exclude_groups = 'mysql'
+  }
+  else {
+    $exclude_groups = 'postgresql'
+  }
   exec { 'bundle gitlab':
-    command   => 'bundle install --deployment --without development test mysql aws',
+    command   => "bundle install --deployment --without development test aws ${exclude_groups}",
     path      => "${::gitlab::gitlab_home}/.rbenv/shims:/usr/bin:/usr/sbin:/bin:/usr/local/bin",
     user      => $::gitlab::gitlab_user,
     cwd       => "${::gitlab::gitlab_home}/gitlab",

@@ -8,8 +8,8 @@ production:
   database: gitlabhq_production
   pool: 10
   username: git
-  password: "secure password"
-  # host: localhost
+  password: "<%= scope.lookupvar("::gitlab::gitlab_db_pass") %>"
+  host: localhost
   # socket: /tmp/mysql.sock
 
 #
@@ -22,7 +22,7 @@ development:
   database: gitlabhq_development
   pool: 5
   username: root
-  password: "secure password"
+  password: "<%= scope.lookupvar("::gitlab::gitlab_db_pass") %>"
   # socket: /tmp/mysql.sock
 
 # Warning: The database defined as "test" will be erased and
@@ -35,5 +35,5 @@ test: &test
   database: gitlabhq_test
   pool: 5
   username: root
-  password:
+  password: <%= scope.lookupvar("::gitlab::gitlab_db_pass") %>
   # socket: /tmp/mysql.sock

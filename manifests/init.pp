@@ -33,7 +33,7 @@ class gitlab (
 
   anchor { 'gitlab::begin': } ->
   class { 'gitlab::packages': } ->
-  class { '::gitlab::install': } ->
+  class { 'gitlab::install': } ->
   anchor { 'gitlab::end': }
 
 }

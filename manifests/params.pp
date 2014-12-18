@@ -18,7 +18,8 @@ class gitlab::params {
   $gitlab_user      = 'git'
   $gitlab_group     = 'git'
   $gitlab_home      = '/home/git'
-  $verbose_output   = true
   $gitlab_repo      = 'https://gitlab.com/gitlab-org/gitlab-ce.git'
   $gitlab_branch    = '7-1-stable'
+  $gitlab_db_type   = 'mysql' #Options available: mysql or postgresql
+  $gitlab_db_pass   = 'changeme'
 }

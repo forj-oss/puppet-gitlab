@@ -7,7 +7,7 @@ production:
   database: gitlabhq_production
   pool: 10
   username: git
-  password: 'changeme'
+  password: '<%= scope.lookupvar("::gitlab::gitlab_db_pass") %>'
   #host: localhost
   #port: 5432
 
@@ -20,7 +20,7 @@ development:
   database: gitlabhq_development
   pool: 5
   username: postgres
-  password:
+  password: '<%= scope.lookupvar("::gitlab::gitlab_db_pass") %>'
 
 #
 # Staging specific
