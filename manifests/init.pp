@@ -14,26 +14,10 @@
 # under the License.
 #
 #
-class gitlab (
-  $tar_url          = $::gitlab::params::tar_url,
-) inherits gitlab::params {
-
-  #validate_bool($install_java)
-  #validate_string($tar_url, $plugins_base_url, $user_home, $dbhost, $dbport, $dbname,
-  #  $dbuser_name, $dbuser_pass, $of_port, $of_secure_port, $of_admin_pass)
-  #validate_hash($of_config)
-  #validate_array($plugins)
-
-  #if $of_port == '' {
-  #  fail('Openfire default port cannot be null')
-  #}
-  #if $of_secure_port == '' {
-  #  fail('Openfire secure port cannot be null')
-  #}
-
+class gitlab inherits gitlab::params
+{
   anchor { 'gitlab::begin': } ->
   class { 'gitlab::packages': } ->
   class { 'gitlab::install': } ->
   anchor { 'gitlab::end': }
-
 }

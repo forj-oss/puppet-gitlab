@@ -15,7 +15,6 @@
 #
 #
 class gitlab::install
-inherits gitlab::params
 {
   # Group/User/Home
   group { $::gitlab::gitlab_group:
@@ -146,9 +145,9 @@ inherits gitlab::params
   else {
     $exclude_groups = 'postgresql'
   }
+  Exec { path => [ "${::gitlab::gitlab_home}/.rbenv/shims:/usr/bin:/usr/sbin:/bin:/usr/local/bin", ] }
   exec { 'bundle gitlab':
     command   => "bundle install --deployment --without development test aws ${exclude_groups}",
-    path      => "${::gitlab::gitlab_home}/.rbenv/shims:/usr/bin:/usr/sbin:/bin:/usr/local/bin",
     user      => $::gitlab::gitlab_user,
     cwd       => "${::gitlab::gitlab_home}/gitlab",
     timeout   => 0,
@@ -158,7 +157,6 @@ inherits gitlab::params
   }
   exec { 'bundle exec gitlab-shell':
     command     => 'bundle exec rake gitlab:shell:install[v2.2.0]',
-    path        => "${::gitlab::gitlab_home}/.rbenv/shims:/usr/bin:/usr/sbin:/bin:/usr/local/bin",
     user        => $::gitlab::gitlab_user,
     cwd         => "${::gitlab::gitlab_home}/gitlab",
     environment => ['RAILS_ENV=production',
@@ -170,7 +168,6 @@ inherits gitlab::params
   }
   exec { 'bundle exec gitlab-setup':
     command   => '/usr/bin/yes yes | bundle exec rake gitlab:setup RAILS_ENV=production',
-    path      => "${::gitlab::gitlab_home}/.rbenv/shims:/usr/bin:/usr/sbin:/bin:/usr/local/bin",
     user      => $::gitlab::gitlab_user,
     cwd       => "${::gitlab::gitlab_home}/gitlab",
     creates   => "${::gitlab::gitlab_home}/.setup_finished",
@@ -187,7 +184,6 @@ inherits gitlab::params
   }
   exec { 'compile gitlab assets':
     command => 'bundle exec rake assets:precompile RAILS_ENV=production',
-    path    => "${::gitlab::gitlab_home}/.rbenv/shims:/usr/bin:/usr/sbin:/bin:/usr/local/bin",
     user    => $::gitlab::gitlab_user,
     timeout => 0,
     cwd     => "${::gitlab::gitlab_home}/gitlab",
