@@ -14,8 +14,22 @@
 # under the License.
 #
 #
-class gitlab inherits gitlab::params
+class gitlab
+(
+  $gitlab_user      = $gitlab::params::gitlab_user,
+  $gitlab_group     = $gitlab::params::gitlab_group,
+  $gitlab_home      = $gitlab::params::gitlab_home,
+  $gitlab_repo      = $gitlab::params::gitlab_repo,
+  $gitlab_branch    = $gitlab::params::gitlab_branch,
+  $gitlab_db_type   = $gitlab::params::gitlab_db_type,
+  $gitlab_db_pass   = $gitlab::params::gitlab_db_pass,
+) inherits gitlab::params
 {
+
+  #Validate parameters
+  validate_string($gitlab_user, $gitlab_group, $gitlab_home, $gitlab_repo,
+    $gitlab_branch, $gitlab_db_type, $gitlab_db_pass)
+
   anchor { 'gitlab::begin': } ->
   class { 'gitlab::packages': } ->
   class { 'gitlab::install': } ->

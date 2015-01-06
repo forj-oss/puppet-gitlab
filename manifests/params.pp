@@ -22,8 +22,4 @@ class gitlab::params {
   $gitlab_branch    = '7-1-stable'
   $gitlab_db_type   = 'mysql' #Options available: mysql or postgresql
   $gitlab_db_pass   = 'changeme'
-
-  #Validate parameters
-  validate_string($gitlab_user, $gitlab_group, $gitlab_home, $gitlab_repo,
-    $gitlab_branch, $gitlab_db_type, $gitlab_db_pass)
 }
