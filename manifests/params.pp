@@ -15,11 +15,13 @@
 #
 #
 class gitlab::params {
+  $vhost_name       = $::fqdn
   $gitlab_user      = 'git'
+  $gitlab_user_home = '/home/git'
   $gitlab_group     = 'git'
-  $gitlab_home      = '/home/git'
   $gitlab_repo      = 'https://gitlab.com/gitlab-org/gitlab-ce.git'
   $gitlab_branch    = '7-1-stable'
   $gitlab_db_type   = 'mysql' #Options available: mysql or postgresql
+  $gitlab_db_user   = 'git'
   $gitlab_db_pass   = 'changeme'
 }

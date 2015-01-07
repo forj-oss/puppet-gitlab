@@ -16,18 +16,20 @@
 #
 class gitlab
 (
+  $vhost_name       = $gitlab::params::vhost_name,
   $gitlab_user      = $gitlab::params::gitlab_user,
+  $gitlab_user_home = $gitlab::params::gitlab_user_home,
   $gitlab_group     = $gitlab::params::gitlab_group,
-  $gitlab_home      = $gitlab::params::gitlab_home,
   $gitlab_repo      = $gitlab::params::gitlab_repo,
   $gitlab_branch    = $gitlab::params::gitlab_branch,
   $gitlab_db_type   = $gitlab::params::gitlab_db_type,
+  $gitlab_db_user   = $gitlab::params::gitlab_db_user,
   $gitlab_db_pass   = $gitlab::params::gitlab_db_pass,
 ) inherits gitlab::params
 {
 
   #Validate parameters
-  validate_string($gitlab_user, $gitlab_group, $gitlab_home, $gitlab_repo,
+  validate_string($gitlab_user, $gitlab_group, $gitlab_user_home, $gitlab_repo,
     $gitlab_branch, $gitlab_db_type, $gitlab_db_pass)
 
   anchor { 'gitlab::begin': } ->

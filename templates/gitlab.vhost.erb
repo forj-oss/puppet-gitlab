@@ -29,7 +29,7 @@
 ## See installation.md#using-https for additional HTTPS configuration details.
 
 upstream gitlab {
-  server unix:/home/git/gitlab/tmp/sockets/gitlab.socket fail_timeout=0;
+  server unix:<%= scope.lookupvar("::gitlab::gitlab_user_home") %>/gitlab/tmp/sockets/gitlab.socket fail_timeout=0;
 }
 
 ## Normal HTTP host
@@ -38,7 +38,7 @@ server {
   listen [::]:80 ipv6only=on default_server;
   server_name localhost; ## Replace this with something like gitlab.example.com
   server_tokens off; ## Don't show the nginx version number, a security best practice
-  root /home/git/gitlab/public;
+  root <%= scope.lookupvar("::gitlab::gitlab_user_home") %>/gitlab/public;
 
   ## Increase this if you want to upload large attachments
   ## Or if you want to accept large git objects over http
@@ -84,7 +84,7 @@ server {
   ## See config/application.rb under "Relative url support" for the list of
   ## other files that need to be changed for relative url support
   location ~ ^/(assets)/ {
-    root /home/git/gitlab/public;
+    root <%= scope.lookupvar("::gitlab::gitlab_user_home") %>/gitlab/public;
     gzip_static on; # to serve pre-gzipped version
     expires max;
     add_header Cache-Control public;

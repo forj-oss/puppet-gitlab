@@ -7,7 +7,7 @@ production:
   reconnect: false
   database: gitlabhq_production
   pool: 10
-  username: git
+  username: <%= scope.lookupvar("::gitlab::gitlab_db_user") %>
   password: "<%= scope.lookupvar("::gitlab::gitlab_db_pass") %>"
   host: localhost
   # socket: /tmp/mysql.sock

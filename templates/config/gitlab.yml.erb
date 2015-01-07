@@ -15,7 +15,7 @@ production: &base
   ## GitLab settings
   gitlab:
     ## Web server settings (note: host is the FQDN, do not include http://)
-    host: localhost
+    host: <%= scope.lookupvar("::gitlab::vhost_name") %>
     port: 80
     https: false
 

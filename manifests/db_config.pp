@@ -20,20 +20,20 @@ class gitlab::db_config
     class { 'postgresql::server':
       require => Package['libpq-dev'],
     }
-    postgresql::server::role { 'git':
-      password_hash => postgresql_password('git', $::gitlab::gitlab_db_pass),
+    postgresql::server::role { $::gitlab::gitlab_db_user:
+      password_hash => postgresql_password($::gitlab::gitlab_db_user, $::gitlab::gitlab_db_pass),
       createdb      => true,
       require       => Class['postgresql::server'],
     }
     postgresql::server::db { 'gitlabhq_production':
-      user     => 'git',
+      user     => $::gitlab::gitlab_user,
       password => postgresql_password('git', $::gitlab::gitlab_db_pass),
-      owner    => 'git',
+      owner    => $::gitlab::gitlab_db_user,
       require  => Postgresql::Server::Role['git'],
     }
     exec { 'testing sql connection':
       command => 'psql -d gitlabhq_production',
-      user    => $::gitlab::gitlab_user,
+      user    => $::gitlab::gitlab_db_user,
       require => Postgresql::Server::Db['gitlabhq_production'],
     }
   }
@@ -45,7 +45,7 @@ class gitlab::db_config
       require     => Package['libmysqlclient-dev'],
     }
     mysql::db { 'gitlabhq_production':
-      user     => 'git',
+      user     => $::gitlab::gitlab_db_user,
       password => $::gitlab::gitlab_db_pass,
       host     => 'localhost',
       grant    => ['all'],
@@ -53,7 +53,7 @@ class gitlab::db_config
       require  => Class['::mysql::server'],
     }
     exec { 'testing sql connection':
-      command => "mysql -u git -p${::gitlab::gitlab_db_pass} -D gitlabhq_production",
+      command => "mysql -u ${::gitlab::gitlab_db_user} -p${::gitlab::gitlab_db_pass} -D gitlabhq_production",
       user    => $::gitlab::gitlab_user,
       require => Mysql::Db['gitlabhq_production'],
     }
