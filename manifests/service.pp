@@ -1,4 +1,4 @@
-# == Class: gitlab::params
+# == Class: gitlab::service
 # Copyright 2014 Hewlett-Packard Development Company, L.P.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -13,17 +13,18 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 #
-#
-class gitlab::params {
-  $vhost_name       = $::fqdn
-  $gitlab_user      = 'git'
-  $gitlab_user_home = '/home/git'
-  $gitlab_group     = 'git'
-  $gitlab_ruby_ver  = '2.1.2'
-  $gitlab_repo      = 'https://gitlab.com/gitlab-org/gitlab-ce.git'
-  $gitlab_branch    = '7-3-stable'
-  $gitlab_shell_ver = '2.0.1'
-  $gitlab_db_type   = 'mysql' #Options available: mysql or postgresql
-  $gitlab_db_user   = 'git'
-  $gitlab_db_pass   = 'changeme'
+class gitlab::service
+{
+  service { 'gitlab':
+    ensure     => running,
+    enable     => true,
+    hasrestart => true,
+    hasstatus  => true,
+  } ->
+  service { 'nginx':
+    ensure     => running,
+    enable     => true,
+    hasrestart => true,
+    hasstatus  => true,
+  }
 }

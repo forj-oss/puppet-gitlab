@@ -16,31 +16,8 @@
 #
 class gitlab::install
 {
-  # Group/User/Home
-  group { $::gitlab::gitlab_group:
-    ensure  => present,
-  }
-  user { $::gitlab::gitlab_user:
-    ensure     => present,
-    comment    => 'GitLab User',
-    home       => $::gitlab::gitlab_user_home,
-    gid        => $::gitlab::gitlab_group,
-    shell      => '/bin/bash',
-    membership => 'minimum',
-    require    => Group[$::gitlab::gitlab_group],
-  }
-  file { $::gitlab::gitlab_user_home:
-    ensure  => directory,
-    owner   => $::gitlab::gitlab_user,
-    group   => $::gitlab::gitlab_group,
-    mode    => '0644',
-    require => User[$::gitlab::gitlab_user],
-  }
-
   # Configure GitLab Database
-  class { 'gitlab::db_config':
-    require => File[$::gitlab::gitlab_user_home],
-  }
+  class { 'gitlab::db_config': }
 
   # Download GitLab Repository/Branch
   vcsrepo { "${::gitlab::gitlab_user_home}/gitlab":
@@ -49,8 +26,7 @@ class gitlab::install
     source   => $::gitlab::gitlab_repo,
     revision => $::gitlab::gitlab_branch,
     user     => $::gitlab::gitlab_user,
-    require  => [File[$::gitlab::gitlab_user_home],
-                Class['gitlab::db_config']],
+    require  => Class['gitlab::db_config'],
   }
 
   # Copy Configuration Files
@@ -120,8 +96,7 @@ class gitlab::install
   rbenv::install { $::gitlab::gitlab_user:
     group   => $::gitlab::gitlab_group,
     home    => $::gitlab::gitlab_user_home,
-    require => [User[$::gitlab::gitlab_user],
-                Vcsrepo["${::gitlab::gitlab_user_home}/gitlab"],]
+    require => Vcsrepo["${::gitlab::gitlab_user_home}/gitlab"],
   }
   file { "${::gitlab::gitlab_user_home}/.bashrc":
     ensure  => link,
@@ -132,7 +107,7 @@ class gitlab::install
     user    => $::gitlab::gitlab_user,
     group   => $::gitlab::gitlab_group,
     home    => $::gitlab::gitlab_user_home,
-    ruby    => '2.1.2', #$gitlab_ruby_version,
+    ruby    => $::gitlab::gitlab_ruby_ver,
     global  => true,
     require => File["${::gitlab::gitlab_user_home}/.bashrc"],
   }
@@ -156,7 +131,7 @@ class gitlab::install
     require   => Rbenv::Compile['gitlab/ruby'],
   }
   exec { 'bundle exec gitlab-shell':
-    command     => 'bundle exec rake gitlab:shell:install[v2.2.0]',
+    command     => "bundle exec rake gitlab:shell:install[v${::gitlab::gitlab_shell_ver}]",
     user        => $::gitlab::gitlab_user,
     cwd         => "${::gitlab::gitlab_user_home}/gitlab",
     environment => ['RAILS_ENV=production',
@@ -191,14 +166,6 @@ class gitlab::install
     #refreshonly => true,
   }
 
-  service { 'gitlab':
-    ensure     => running,
-    enable     => true,
-    hasrestart => true,
-    hasstatus  => true,
-    require    => Exec['compile gitlab assets'],
-  }
-
   #### Install NGINX
   if (!defined(Package['nginx'])) {
     package { 'nginx' :
@@ -218,12 +185,5 @@ class gitlab::install
     ensure  => 'link',
     target  => '/etc/nginx/sites-available/gitlab',
     require => File['/etc/nginx/sites-available/gitlab'],
-  }
-  service { 'nginx':
-    ensure     => running,
-    enable     => true,
-    hasrestart => true,
-    hasstatus  => true,
-    require    => File['/etc/nginx/sites-enabled/gitlab'],
   }
 }
